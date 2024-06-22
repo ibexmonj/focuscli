@@ -3,6 +3,7 @@ package cmd
 import (
 	"fmt"
 	"github.com/gen2brain/beeep"
+	"github.com/ibexmonj/focuscli/utils"
 	"github.com/spf13/cobra"
 	"time"
 )
@@ -20,6 +21,17 @@ var breakCmd = &cobra.Command{
 		err := beeep.Alert("FocusCLI", "Break session ended. Ready to focus again!", "")
 		if err != nil {
 			fmt.Println("Failed to send notification:", err)
+		}
+
+		// Save session data
+		session := utils.Session{
+			Type:      "break",
+			Duration:  breakDuration,
+			Timestamp: time.Now(),
+		}
+		err = utils.SaveSession(session)
+		if err != nil {
+			fmt.Println("Failed to save session data:", err)
 		}
 	},
 }

@@ -3,6 +3,7 @@ package cmd
 import (
 	"fmt"
 	"github.com/gen2brain/beeep"
+	"github.com/ibexmonj/focuscli/utils"
 	"github.com/spf13/cobra"
 	"time"
 )
@@ -22,6 +23,18 @@ var startCmd = &cobra.Command{
 		if err != nil {
 			fmt.Println("Failed to send notification:", err)
 		}
+
+		// Save session data
+		session := utils.Session{
+			Type:      "focus",
+			Duration:  sessionDuration,
+			Timestamp: time.Now(),
+		}
+		err = utils.SaveSession(session)
+		if err != nil {
+			fmt.Println("Failed to save session data:", err)
+		}
+
 	},
 }
 
