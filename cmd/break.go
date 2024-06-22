@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"github.com/gen2brain/beeep"
 	"github.com/ibexmonj/focuscli/utils"
+	"github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
 	"time"
 )
@@ -15,12 +16,13 @@ var breakCmd = &cobra.Command{
 	Short: "Start a break session",
 	Long:  `Start a break session of a specified duration in minutes.`,
 	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Printf("Starting a %d-minute break...\n", breakDuration)
+		logrus.Infof("Starting a %d-minute break...", breakDuration)
 		time.Sleep(time.Duration(breakDuration) * time.Minute)
 		fmt.Println("Break session ended. Ready to focus again!")
+
 		err := beeep.Alert("FocusCLI", "Break session ended. Ready to focus again!", "")
 		if err != nil {
-			fmt.Println("Failed to send notification:", err)
+			logrus.Errorf("Failed to send notification: %v", err)
 		}
 
 		// Save session data
@@ -31,7 +33,7 @@ var breakCmd = &cobra.Command{
 		}
 		err = utils.SaveSession(session)
 		if err != nil {
-			fmt.Println("Failed to save session data:", err)
+			logrus.Errorf("Failed to save session data: %v", err)
 		}
 	},
 }

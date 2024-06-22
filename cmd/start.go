@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"github.com/gen2brain/beeep"
 	"github.com/ibexmonj/focuscli/utils"
+	"github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
 	"time"
 )
@@ -16,12 +17,13 @@ var startCmd = &cobra.Command{
 	Short: "Start a focus session",
 	Long:  `Start a focus session of a specified duration in minutes using the Pomodoro Technique.`,
 	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Printf("Starting a %d-minute focus session...\n", sessionDuration)
+		logrus.Infof("Starting a %d-minute focus session...", sessionDuration)
 		time.Sleep(time.Duration(sessionDuration) * time.Minute)
 		fmt.Println("Focus session ended. Time for a break!")
+
 		err := beeep.Alert("FocusCLI", "Focus session ended. Time for a break!", "")
 		if err != nil {
-			fmt.Println("Failed to send notification:", err)
+			logrus.Errorf("Failed to send notification: %v", err)
 		}
 
 		// Save session data
@@ -32,7 +34,7 @@ var startCmd = &cobra.Command{
 		}
 		err = utils.SaveSession(session)
 		if err != nil {
-			fmt.Println("Failed to save session data:", err)
+			logrus.Errorf("Failed to save session data: %v", err)
 		}
 
 	},
