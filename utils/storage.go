@@ -2,7 +2,7 @@ package utils
 
 import (
 	"encoding/json"
-	"io/ioutil"
+	"io"
 	"os"
 	"time"
 )
@@ -20,7 +20,13 @@ func SaveSession(session Session) error {
 
 	// Check if the data file exists
 	if _, err := os.Stat(dataFile); err == nil {
-		data, err := ioutil.ReadFile(dataFile)
+		file, err := os.Open(dataFile)
+		if err != nil {
+			return err
+		}
+		defer file.Close()
+
+		data, err := io.ReadAll(file)
 		if err != nil {
 			return err
 		}
@@ -40,7 +46,7 @@ func SaveSession(session Session) error {
 		return err
 	}
 
-	err = ioutil.WriteFile(dataFile, data, 0644)
+	err = os.WriteFile(dataFile, data, 0644)
 	if err != nil {
 		return err
 	}
@@ -48,12 +54,18 @@ func SaveSession(session Session) error {
 	return nil
 }
 
-func loadSessions() ([]Session, error) {
+func LoadSessions() ([]Session, error) {
 	var sessions []Session
 
 	// Check if the data file exists
 	if _, err := os.Stat(dataFile); err == nil {
-		data, err := ioutil.ReadFile(dataFile)
+		file, err := os.Open(dataFile)
+		if err != nil {
+			return nil, err
+		}
+		defer file.Close()
+
+		data, err := io.ReadAll(file)
 		if err != nil {
 			return nil, err
 		}
